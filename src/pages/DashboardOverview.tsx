@@ -1,4 +1,14 @@
 import { motion } from 'motion/react'
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from 'recharts'
 import heroDashboard from '../assets/illustrations/hero-dashboard.webp'
 import { getCoverArt } from '../assets/covers/coverArt'
 import {
@@ -25,6 +35,22 @@ const statIconClasses: Record<string, string> = {
   sky: 'from-sky-300 to-blue-400',
 }
 
+function ListeningTooltip({ active, payload, label }: { active?: boolean; payload?: Array<{ value?: number }>; label?: string }) {
+  if (!active || !payload?.length) {
+    return null
+  }
+
+  const hours = Number(payload[0]?.value ?? 0)
+
+  return (
+    <div className="rounded-[18px] border border-white/14 bg-[#312a56]/96 px-3.5 py-3 text-white backdrop-blur-[10px]">
+      <p className="text-[0.72rem] font-bold tracking-[0.18em] text-white/60 uppercase">{label}</p>
+      <strong className="mt-1 block text-[1.1rem] font-extrabold">{hours.toFixed(1)} hours</strong>
+      <span className="mt-1 block text-sm text-white/70">Listening time</span>
+    </div>
+  )
+}
+
 function DashboardOverview() {
   const { data } = useOverviewData()
 
@@ -33,6 +59,15 @@ function DashboardOverview() {
   }
 
   const { genres, recentTracks, stats } = data
+  const listeningBars = [
+    { day: 'Mon', hours: 3.5, fill: '#a78bfa' },
+    { day: 'Tue', hours: 4.9, fill: '#f9a8d4' },
+    { day: 'Wed', hours: 3.8, fill: '#fdba74' },
+    { day: 'Thu', hours: 5.3, fill: '#fcd34d' },
+    { day: 'Fri', hours: 3.6, fill: '#bef264' },
+    { day: 'Sat', hours: 5.0, fill: '#7dd3fc' },
+    { day: 'Sun', hours: 4.1, fill: '#c4b5fd' },
+  ]
 
   return (
     <>
@@ -102,24 +137,61 @@ function DashboardOverview() {
             </button>
           </div>
 
-          <div className="grid min-h-[190px] grid-cols-7 items-end gap-2 px-1 pt-3 pb-1 sm:min-h-[230px] sm:gap-[14px] sm:px-3 sm:pt-[18px] sm:pb-1.5">
-            {[
-              ['Mon', '58%', 'from-violet-300 to-violet-500'],
-              ['Tue', '82%', 'from-pink-200 to-pink-400'],
-              ['Wed', '64%', 'from-orange-200 to-orange-400'],
-              ['Thu', '88%', 'from-yellow-200 to-amber-400'],
-              ['Fri', '60%', 'from-lime-200 to-lime-400'],
-              ['Sat', '84%', 'from-sky-200 to-sky-400'],
-              ['Sun', '68%', 'from-purple-200 to-violet-400'],
-            ].map(([day, height, colors]) => (
-              <div key={day} className="grid justify-items-center gap-2">
-                <span
-                  className={`block w-4 rounded-full bg-linear-to-b shadow-[inset_0_8px_12px_rgba(255,255,255,0.32)] sm:w-6 ${colors}`}
-                  style={{ height }}
+          <div className="h-[220px] sm:h-[260px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={listeningBars}
+                margin={{ top: 10, right: 10, left: -28, bottom: 2 }}
+                barCategoryGap="26%"
+              >
+                <defs>
+                  <linearGradient id="listeningShine" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="#ffffff" stopOpacity={0.42} />
+                    <stop offset="35%" stopColor="#ffffff" stopOpacity={0.12} />
+                    <stop offset="100%" stopColor="#ffffff" stopOpacity={0.02} />
+                  </linearGradient>
+                </defs>
+
+                <CartesianGrid stroke="#ede3f7" strokeDasharray="3 8" vertical={false} />
+                <XAxis
+                  dataKey="day"
+                  tickLine={false}
+                  axisLine={false}
+                  dy={8}
+                  tick={{ fill: '#827792', fontSize: 13, fontWeight: 600 }}
                 />
-                <small className="text-[0.72rem] text-[#7c718d] sm:text-[0.84rem]">{day}</small>
-              </div>
-            ))}
+                <YAxis
+                  domain={[0, 6]}
+                  ticks={[0, 2, 4, 6]}
+                  tickFormatter={(value) => (value === 0 ? '0' : `${value}h`)}
+                  tickLine={false}
+                  axisLine={false}
+                  tickMargin={10}
+                  tick={{ fill: '#a69ab9', fontSize: 12, fontWeight: 600 }}
+                />
+                <Tooltip
+                  cursor={false}
+                  content={<ListeningTooltip />}
+                />
+                <Bar
+                  dataKey="hours"
+                  radius={[999, 999, 999, 999]}
+                  maxBarSize={28}
+                  animationDuration={950}
+                  animationEasing="ease-out"
+                >
+                  {listeningBars.map((entry) => (
+                    <Cell key={entry.day} fill={entry.fill} />
+                  ))}
+                </Bar>
+                <Bar
+                  dataKey="hours"
+                  radius={[999, 999, 999, 999]}
+                  fill="url(#listeningShine)"
+                  isAnimationActive={false}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </TiltCard>
 
@@ -171,7 +243,7 @@ function DashboardOverview() {
                 </div>
                 <button
                   type="button"
-                  className="h-[42px] w-[42px] rounded-full bg-white font-extrabold text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)]"
+                  className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white font-extrabold text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)]"
                 >
                   <PlayIcon size={16} />
                 </button>
@@ -194,7 +266,7 @@ function DashboardOverview() {
             </div>
             <button
               type="button"
-              className="h-[42px] w-[42px] rounded-full bg-white font-extrabold text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)]"
+              className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white font-extrabold text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)]"
             >
               <PlayIcon size={16} />
             </button>

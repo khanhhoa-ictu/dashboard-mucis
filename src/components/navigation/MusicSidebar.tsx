@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'motion/react'
+import { motion } from 'motion/react'
 import { NavLink } from 'react-router-dom'
 import avatarMia from '../../assets/illustrations/avatar-mia.webp'
 import { sidebarRouteMap } from '../../constants/routes'
@@ -65,10 +65,10 @@ function MusicSidebar() {
                 type="button"
                 whileHover={{ x: 6, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="flex shrink-0 items-center gap-3 rounded-[18px] px-[14px] py-3 text-left font-bold whitespace-nowrap text-white/92 transition duration-200 hover:translate-x-1 hover:bg-[#fffaf9] hover:text-[#7e59e9] hover:shadow-[0_12px_24px_rgba(93,73,173,0.18)] lg:w-full lg:shrink"
+                className="flex shrink-0 items-center gap-3 rounded-[18px] px-[14px] py-3 text-left font-bold whitespace-nowrap text-white/92 transition duration-300 hover:translate-x-1 hover:bg-[#fffaf9] hover:text-[#7e59e9] hover:shadow-[0_12px_24px_rgba(93,73,173,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#9f8df1] active:scale-[0.985] lg:w-full lg:shrink"
                 >
                   <span
-                    className="inline-flex h-7 w-7 items-center justify-center rounded-[10px] bg-white/14 text-[0.82rem] font-extrabold"
+                    className="inline-flex h-7 w-7 items-center justify-center rounded-[10px] bg-white/14 text-[0.82rem] font-extrabold transition duration-300"
                     aria-hidden="true"
                   >
                     {Icon ? <Icon size={16} /> : item.charAt(0)}
@@ -85,40 +85,49 @@ function MusicSidebar() {
               end={to === sidebarRouteMap.Dashboard}
               className={({ isActive }) =>
                 [
-                  'relative flex items-center gap-3 rounded-[18px] px-[14px] py-3 text-left font-bold transition duration-200',
+                  'group relative flex items-center gap-3 rounded-[18px] px-[14px] py-3 text-left font-bold transition duration-200',
                   'shrink-0 whitespace-nowrap lg:w-full lg:shrink',
                   isActive
                     ? 'translate-x-1 bg-[#fffaf9] text-[#7e59e9] shadow-[0_12px_24px_rgba(93,73,173,0.18)]'
                     : 'text-white/92 hover:translate-x-1 hover:bg-[#fffaf9] hover:text-[#7e59e9] hover:shadow-[0_12px_24px_rgba(93,73,173,0.18)]',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-[#9f8df1] active:scale-[0.985]',
                 ].join(' ')
               }
             >
               {({ isActive }) => (
                 <>
-                  <AnimatePresence>
-                    {isActive && (
-                      <motion.span
-                        layoutId="sidebar-active-pill"
-                        className="absolute inset-0 rounded-[18px] bg-[#fffaf9] shadow-[0_12px_24px_rgba(93,73,173,0.18)]"
-                        transition={{ type: 'spring', stiffness: 320, damping: 28 }}
-                      />
-                    )}
-                  </AnimatePresence>
+                  {isActive && (
+                    <motion.span
+                      layoutId="sidebar-active-pill"
+                      className="absolute inset-0 rounded-[18px] bg-[#fffaf9] shadow-[0_12px_24px_rgba(93,73,173,0.18)]"
+                      transition={{ type: 'spring', stiffness: 360, damping: 30, mass: 0.75 }}
+                    />
+                  )}
                   {(() => {
                     const Icon = iconMap[item as keyof typeof iconMap]
                     return (
-                  <span
+                  <motion.span
+                    layout="position"
+                    transition={{ type: 'spring', stiffness: 320, damping: 24 }}
                     className={[
-                      'relative z-10 inline-flex h-7 w-7 items-center justify-center rounded-[10px] text-[0.82rem] font-extrabold',
-                      isActive ? 'bg-[rgba(126,89,233,0.14)]' : 'bg-white/14',
+                      'relative z-10 inline-flex h-7 w-7 items-center justify-center rounded-[10px] text-[0.82rem] font-extrabold transition duration-300',
+                      isActive
+                        ? 'bg-[rgba(126,89,233,0.14)] text-[#7e59e9] shadow-[inset_0_1px_0_rgba(255,255,255,0.75)]'
+                        : 'bg-white/14 text-current group-hover:bg-white/20',
                     ].join(' ')}
                     aria-hidden="true"
                   >
                           {Icon ? <Icon size={16} /> : item.charAt(0)}
-                  </span>
+                  </motion.span>
                     )
                   })()}
-                  <span className="relative z-10">{item}</span>
+                  <motion.span
+                    layout="position"
+                    transition={{ type: 'spring', stiffness: 320, damping: 24 }}
+                    className="relative z-10 tracking-[0.01em]"
+                  >
+                    {item}
+                  </motion.span>
                 </>
               )}
             </NavLink>

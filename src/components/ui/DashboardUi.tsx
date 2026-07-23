@@ -33,7 +33,7 @@ export const panelClass =
   'rounded-[24px] border border-white/72 bg-linear-to-b from-[rgba(255,252,250,0.96)] to-[rgba(255,245,240,0.94)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:rounded-[28px] sm:p-[18px]'
 
 const heroClass =
-  'grid items-center gap-4 rounded-[24px] border border-white/70 bg-linear-to-br from-[#d8cbff] via-[#cfbeff] to-[#cfc3ff] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:gap-6 sm:rounded-[28px] sm:px-6 sm:py-5'
+  'grid items-center gap-4 rounded-[24px] border border-white/70 bg-linear-to-br from-[color-mix(in_srgb,var(--route-accent-soft)_72%,white)] via-[color-mix(in_srgb,var(--route-accent-soft)_88%,white)] to-[color-mix(in_srgb,var(--route-accent-soft)_76%,#f7efff)] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:gap-6 sm:rounded-[28px] sm:px-6 sm:py-5'
 
 export function SectionHeader({
   title,
@@ -49,7 +49,7 @@ export function SectionHeader({
       {actionLabel ? (
         <button
           type="button"
-          className="rounded-full bg-white px-[14px] py-2 text-[#736885] shadow-[0_10px_18px_rgba(223,208,235,0.26)]"
+          className="rounded-full bg-[var(--route-chip-bg)] px-[14px] py-2 text-[#736885] shadow-[0_10px_18px_var(--route-chip-shadow)] transition duration-300 hover:text-[var(--route-accent-strong)]"
         >
           {actionLabel}
         </button>
@@ -98,7 +98,7 @@ export function PageHero({
         {buttonLabel ? (
           <button
             type="button"
-            className="w-full rounded-full bg-linear-to-br from-[#a77cfb] to-[#8d67eb] px-6 py-3.5 font-extrabold text-white shadow-[0_14px_26px_rgba(141,103,235,0.28)] sm:w-auto"
+            className="w-full rounded-full bg-linear-to-br from-[var(--route-accent)] to-[var(--route-accent-strong)] px-6 py-3.5 font-extrabold text-white shadow-[0_14px_26px_var(--route-chip-shadow)] transition duration-300 hover:brightness-[1.03] sm:w-auto"
           >
             {buttonLabel}
           </button>

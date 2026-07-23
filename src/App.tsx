@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
+import { AudioPlayerProvider } from './context/AudioPlayerContext'
 import { MockApiProvider } from './context/MockApiContext'
 import { RouteFallback } from './components/sections'
 import { MusicDashboardLayout } from './layouts'
@@ -12,12 +13,13 @@ const PlaylistsPage = lazy(() => import('./pages').then((module) => ({ default: 
 const PodcastsPage = lazy(() => import('./pages').then((module) => ({ default: module.PodcastsPage })))
 const ActivityPage = lazy(() => import('./pages').then((module) => ({ default: module.ActivityPage })))
 const SettingsPage = lazy(() => import('./pages').then((module) => ({ default: module.SettingsPage })))
+const AdminLibraryPage = lazy(() => import('./pages').then((module) => ({ default: module.AdminLibraryPage })))
 
 function App() {
   return (
     <Suspense fallback={<RouteFallback />}>
       <Routes>
-        <Route element={<MockApiProvider><MusicDashboardLayout /></MockApiProvider>}>
+        <Route element={<MockApiProvider><AudioPlayerProvider><MusicDashboardLayout /></AudioPlayerProvider></MockApiProvider>}>
           <Route index element={<DashboardOverview />} />
           <Route path={appRoutes.myMusic.slice(1)} element={<MyMusicPage />} />
           <Route path={appRoutes.favorites.slice(1)} element={<FavoritesPage />} />
@@ -25,6 +27,7 @@ function App() {
           <Route path={appRoutes.podcasts.slice(1)} element={<PodcastsPage />} />
           <Route path={appRoutes.activity.slice(1)} element={<ActivityPage />} />
           <Route path={appRoutes.settings.slice(1)} element={<SettingsPage />} />
+          <Route path={appRoutes.libraryAdmin.slice(1)} element={<AdminLibraryPage />} />
         </Route>
         <Route path="*" element={<Navigate to={appRoutes.dashboard} replace />} />
       </Routes>

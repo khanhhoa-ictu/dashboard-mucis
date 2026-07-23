@@ -62,7 +62,7 @@ function ActivityPage() {
         <HeaderActions />
       </AnimatedSection>
 
-      <AnimatedSection delay={0.05} className="grid items-center gap-4 rounded-[24px] border border-white/70 bg-linear-to-br from-[#d8cbff] via-[#cfbeff] to-[#cfc3ff] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:gap-6 sm:rounded-[28px] sm:px-6 sm:py-5 lg:grid-cols-[1.1fr_0.9fr]">
+      <AnimatedSection delay={0.05} className="grid items-center gap-4 rounded-[24px] border border-white/70 bg-linear-to-br from-[color-mix(in_srgb,var(--route-accent-soft)_82%,white)] via-[color-mix(in_srgb,var(--route-accent)_62%,white)] to-[color-mix(in_srgb,var(--route-accent-strong)_48%,white)] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),var(--route-chip-shadow)] sm:gap-6 sm:rounded-[28px] sm:px-6 sm:py-5 lg:grid-cols-[1.1fr_0.9fr]">
         <div className="overflow-hidden rounded-[24px] bg-white/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.3)]">
           <img src={heroActivityWide} alt="Mia enjoying music with coffee" className="artwork-media h-[220px] w-full object-cover sm:h-[280px]" />
         </div>
@@ -78,7 +78,7 @@ function ActivityPage() {
             <br />
             music alive.
           </p>
-          <MotionButton className="w-full rounded-full bg-linear-to-br from-[#a77cfb] to-[#8d67eb] px-6 py-3.5 font-extrabold text-white shadow-[0_14px_26px_rgba(141,103,235,0.28)] sm:w-auto">
+          <MotionButton className="w-full rounded-full bg-linear-to-br from-[var(--route-accent)] to-[var(--route-accent-strong)] px-6 py-3.5 font-extrabold text-white shadow-[var(--route-chip-shadow)] sm:w-auto">
             View Your Highlights
           </MotionButton>
         </div>
@@ -94,7 +94,7 @@ function ActivityPage() {
                 as="article"
                 className={`relative rounded-[20px] bg-linear-to-b p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)] sm:rounded-[24px] sm:p-5 ${statClasses[item.tone]}`}
               >
-                <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-white/65 font-extrabold text-[#8f6aea]">
+                <span className="mb-3 inline-flex h-12 w-12 items-center justify-center rounded-[16px] bg-white/65 font-extrabold text-[var(--route-accent-strong)]">
                   {item.icon === 'N' ? <MusicNoteIcon size={20} /> : item.icon === 'M' ? <MusicNoteIcon size={20} /> : item.icon === 'C' ? <ClockIcon size={20} /> : <SparklesIcon size={20} />}
                 </span>
                 <p className="text-[#6b5f82]">{item.title}</p>
@@ -170,7 +170,7 @@ function ActivityPage() {
                   <strong className="block text-sm text-[#30294f] sm:text-base">{item.title}</strong>
                   <span className="text-xs text-[#7d728e] sm:text-base">{item.note}</span>
                 </div>
-                <span className={`rounded-full px-2 py-1 text-sm font-bold ${item.status === 'top10' ? 'bg-[#f1e9ff] text-[#8f6aea]' : 'bg-[#ecffe9] text-[#4d9b54]'}`}>
+                <span className={`rounded-full px-2 py-1 text-sm font-bold ${item.status === 'top10' ? 'bg-[var(--route-chip-bg)] text-[var(--route-accent-strong)]' : 'bg-[#ecffe9] text-[#4d9b54]'}`}>
                   {item.status === 'top10' ? 'Top 10' : 'Done'}
                 </span>
               </motion.div>
@@ -178,7 +178,7 @@ function ActivityPage() {
           </div>
         </article>
 
-        <TiltCard as="article" className="relative rounded-[24px] bg-linear-to-br from-[#b98eff] via-[#a47bf2] to-[#8d67eb] p-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_18px_35px_rgba(157,115,239,0.24)] sm:rounded-[28px] sm:p-[18px]">
+        <TiltCard as="article" className="relative rounded-[24px] bg-linear-to-br from-[var(--route-accent)] via-[color-mix(in_srgb,var(--route-accent)_72%,var(--route-accent-strong))] to-[var(--route-accent-strong)] p-4 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.3),var(--route-chip-shadow)] sm:rounded-[28px] sm:p-[18px]">
           <h3 className="text-[1.6rem] font-extrabold sm:text-[2rem]">Your Highlights</h3>
           <strong className="mt-4 block text-[1.7rem] sm:text-[2rem]">Top Listener</strong>
           <p className="mt-2 text-white/84">You&apos;re in the top 10% of listeners this month!</p>
@@ -208,7 +208,7 @@ function ActivityPage() {
                 <strong className="block text-sm text-[#30294f] sm:text-base">{track.title}</strong>
                 <span className="text-xs text-[#7d728e] sm:text-base">{track.artist}</span>
               </div>
-              <button type="button" className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)]">
+              <button type="button" className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)]">
                 <PlayIcon size={16} />
               </button>
               <span className="hidden text-[#8e81a8] sm:inline"><MoreIcon size={16} /></span>
@@ -245,7 +245,7 @@ function ActivityPage() {
         </div>
       </AnimatedSection>
 
-      <AnimatedSection delay={0.2} className="grid items-center gap-4 rounded-[24px] bg-linear-to-r from-[#b98eff] to-[#9872ef] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_18px_35px_rgba(157,115,239,0.24)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left">
+      <AnimatedSection delay={0.2} className="grid items-center gap-4 rounded-[24px] bg-linear-to-r from-[var(--route-accent)] to-[var(--route-accent-strong)] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),var(--route-chip-shadow)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left">
         <div className="relative h-[82px] w-[82px]" aria-hidden="true">
           <div className="h-full w-full rounded-[26px] bg-linear-to-b from-[#ffd76e] to-[#ffbf4b] shadow-[0_16px_30px_rgba(98,52,164,0.18)] [clip-path:polygon(50%_0%,63%_31%,98%_35%,72%_58%,79%_94%,50%_74%,21%_94%,28%_58%,2%_35%,37%_31%)]" />
         </div>

@@ -1,4 +1,4 @@
-import type { MouseEvent, PropsWithChildren, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, MouseEvent, PropsWithChildren, ReactNode } from 'react'
 import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react'
 
 const pageAccentMap: Record<string, { primary: string; secondary: string }> = {
@@ -25,7 +25,7 @@ type MotionButtonProps = PropsWithChildren<{
   className?: string
   type?: 'button' | 'submit' | 'reset'
   children: ReactNode
-}>
+}> & Pick<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'disabled'>
 
 type TiltCardProps = PropsWithChildren<{
   className?: string
@@ -124,10 +124,14 @@ export function MotionButton({
   children,
   className,
   type = 'button',
+  onClick,
+  disabled,
 }: MotionButtonProps) {
   return (
     <motion.button
       type={type}
+      onClick={onClick}
+      disabled={disabled}
       whileHover={{ y: -2, scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 380, damping: 24 }}

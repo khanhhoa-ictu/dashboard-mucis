@@ -1,6 +1,8 @@
 export * from './AppIcons'
 export * from './CommonUi'
+export { default as DataSourceToast } from './DataSourceToast'
 export * from './DashboardUi'
+export { default as GlobalAudioDock } from './GlobalAudioDock'
 export * from './MotionPrimitives'
 export { default as PageDataFallback } from './PageDataFallback'
 export { RefreshCwIcon } from './RefreshIcon'

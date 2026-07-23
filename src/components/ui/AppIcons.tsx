@@ -71,6 +71,15 @@ export function PlayIcon(props: IconProps) {
   )
 }
 
+export function PauseIcon(props: IconProps) {
+  return (
+    <IconBase fill="currentColor" stroke="none" {...props}>
+      <rect x="7.2" y="6.5" width="3.4" height="11" rx="1.1" />
+      <rect x="13.4" y="6.5" width="3.4" height="11" rx="1.1" />
+    </IconBase>
+  )
+}
+
 export function HeartIcon(props: IconProps) {
   return (
     <IconBase {...props}>
@@ -413,6 +422,16 @@ export function VolumeIcon(props: IconProps) {
       <path d="M5 10h3l4-4v12l-4-4H5Z" />
       <path d="M16 9a4.5 4.5 0 0 1 0 6" />
       <path d="M18 6.5a8 8 0 0 1 0 11" />
+    </IconBase>
+  )
+}
+
+export function VolumeMuteIcon(props: IconProps) {
+  return (
+    <IconBase {...props}>
+      <path d="M5 10h3l4-4v12l-4-4H5Z" />
+      <path d="m16 9 4 4" />
+      <path d="m20 9-4 4" />
     </IconBase>
   )
 }

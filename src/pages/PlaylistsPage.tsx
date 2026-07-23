@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion } from 'motion/react'
 import { getCoverArt } from '../assets/covers/coverArt'
 import heroPlaylists from '../assets/illustrations/hero-playlists.webp'
@@ -12,6 +13,7 @@ import {
   MoonIcon,
   MoreIcon,
   MotionButton,
+  PauseIcon,
   PageDataFallback,
   PageHero,
   PlayIcon,
@@ -22,7 +24,9 @@ import {
   TiltCard,
   ZapIcon,
 } from '../components/ui'
+import { useAudioPlayer } from '../context/AudioPlayerContext'
 import { usePlaylistsData } from '../hooks'
+import { buildPlayableQueue, buildPlayableTrack } from '../lib/audio/playableTrack'
 
 const moodClasses: Record<string, string> = {
   happy: 'from-[#ffd86b]/92 via-[#ffdf85]/86 to-[#ffc16a]/88',
@@ -34,10 +38,11 @@ const moodClasses: Record<string, string> = {
 }
 
 const panelClass =
-  'rounded-[24px] border border-white/72 bg-linear-to-b from-[rgba(255,252,250,0.96)] to-[rgba(255,245,240,0.94)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:rounded-[28px] sm:p-[18px]'
+  'rounded-[24px] border border-white/72 bg-linear-to-b from-[var(--surface-card-start)] to-[var(--surface-card-end)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),var(--route-chip-shadow)] sm:rounded-[28px] sm:p-[18px]'
 
 function PlaylistsPage() {
   const { data } = usePlaylistsData()
+  const { isCurrentTrack, isPlaying, playTrack, toggleTrack } = useAudioPlayer()
 
   if (!data) {
     return <PageDataFallback title="Loading playlists" />
@@ -62,6 +67,28 @@ function PlaylistsPage() {
     Focus: 'study-desk',
     Sleep: 'moon-river',
   }
+
+  const featuredQueue = useMemo(
+    () => buildPlayableQueue(
+      featuredPlaylists.map((playlist) => ({
+        title: playlist.title,
+        artist: playlist.songs ?? 'Playlist mix',
+        tone: playlist.tone,
+      })),
+    ),
+    [featuredPlaylists],
+  )
+
+  const sharedQueue = useMemo(
+    () => buildPlayableQueue(
+      sharedPlaylists.map((playlist) => ({
+        title: playlist.title,
+        artist: playlist.friends ?? 'Shared playlist',
+        tone: playlist.tone,
+      })),
+    ),
+    [sharedPlaylists],
+  )
 
   return (
     <>
@@ -108,9 +135,26 @@ function PlaylistsPage() {
                 <span className="absolute left-3 top-3 rounded-full bg-white/28 px-2.5 py-1 text-[0.64rem] font-extrabold tracking-[0.18em] text-white uppercase backdrop-blur-[10px]">
                   Curated
                 </span>
-                <span className="absolute right-3 bottom-3 grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[#8f6aea] shadow-[0_12px_22px_rgba(180,162,220,0.28)] transition duration-300 group-hover:scale-[1.08] group-hover:shadow-[0_16px_30px_rgba(155,122,228,0.34)]">
-                  <PlayIcon size={16} />
-                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void toggleTrack(
+                      buildPlayableTrack({
+                        title: playlist.title,
+                        artist: playlist.songs ?? 'Playlist mix',
+                        tone: playlist.tone,
+                      }),
+                      featuredQueue,
+                    )
+                  }}
+                  className="absolute right-3 bottom-3 grid h-11 w-11 place-items-center rounded-full bg-white/92 text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition duration-300 group-hover:scale-[1.08]"
+                >
+                  {isCurrentTrack(buildPlayableTrack({
+                    title: playlist.title,
+                    artist: playlist.songs ?? 'Playlist mix',
+                    tone: playlist.tone,
+                  })) && isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
+                </button>
               </MediaThumb>
               <div className="px-1 pb-1 pt-3">
                 <div className="flex items-start justify-between gap-2">
@@ -179,7 +223,7 @@ function PlaylistsPage() {
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
               className="grid grid-cols-[48px_1fr_auto] items-center gap-3 rounded-[20px] border border-[#eadfff] bg-linear-to-r from-[#f7efff] via-white/90 to-[#fff3fb] px-2.5 py-2.5 shadow-[0_14px_24px_rgba(222,208,236,0.16),inset_0_1px_0_rgba(255,255,255,0.78)] transition-[box-shadow,transform] duration-300 hover:shadow-[0_20px_30px_rgba(212,196,232,0.26),inset_0_1px_0_rgba(255,255,255,0.82)] sm:grid-cols-[56px_1fr_auto] sm:gap-3.5 sm:rounded-[22px] sm:px-3 sm:py-3"
             >
-              <div className="grid h-12 w-12 place-items-center rounded-[14px] bg-[#eee4ff] text-2xl text-[#8f6aea] shadow-[0_10px_18px_rgba(188,170,219,0.2),inset_0_8px_14px_rgba(255,255,255,0.26)] sm:h-[56px] sm:w-[56px] sm:rounded-[16px]">
+              <div className="grid h-12 w-12 place-items-center rounded-[14px] bg-[var(--route-chip-bg)] text-2xl text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow),inset_0_8px_14px_rgba(255,255,255,0.26)] sm:h-[56px] sm:w-[56px] sm:rounded-[16px]">
                 <PlusIcon size={20} />
               </div>
               <div className="min-w-0">
@@ -191,7 +235,7 @@ function PlaylistsPage() {
                 </div>
                 <span className="mt-1 block text-xs text-[#7d728e] sm:text-sm">Build your perfect playlist</span>
               </div>
-              <span className="grid h-10 w-10 place-items-center rounded-full bg-white/88 text-[#8f6aea] shadow-[0_10px_18px_rgba(220,205,235,0.22)] transition duration-300 group-hover:scale-[1.04]">
+              <span className="grid h-10 w-10 place-items-center rounded-full bg-white/88 text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition duration-300 group-hover:scale-[1.04]">
                 <ChevronRightIcon size={18} />
               </span>
             </motion.div>
@@ -262,9 +306,23 @@ function PlaylistsPage() {
                 </div>
                 <button
                   type="button"
-                  className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)] transition duration-300 hover:scale-[1.08] hover:text-[#744be5] hover:shadow-[0_16px_24px_rgba(175,145,231,0.32)] sm:h-[46px] sm:w-[46px]"
+                  onClick={() => {
+                    void toggleTrack(
+                      buildPlayableTrack({
+                        title: playlist.title,
+                        artist: playlist.friends ?? 'Shared playlist',
+                        tone: playlist.tone,
+                      }),
+                      sharedQueue,
+                    )
+                  }}
+                  className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition duration-300 hover:scale-[1.08] sm:h-[46px] sm:w-[46px]"
                 >
-                  <PlayIcon size={16} />
+                  {isCurrentTrack(buildPlayableTrack({
+                    title: playlist.title,
+                    artist: playlist.friends ?? 'Shared playlist',
+                    tone: playlist.tone,
+                  })) && isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
                 </button>
               </motion.div>
             ))}
@@ -320,9 +378,21 @@ function PlaylistsPage() {
               </div>
               <button
                 type="button"
-                className="grid h-12 w-12 place-items-center rounded-full bg-white/92 text-[#8f6aea] shadow-[0_14px_24px_rgba(157,115,239,0.24)] transition duration-300 hover:scale-[1.08] hover:shadow-[0_18px_30px_rgba(140,98,228,0.34)] sm:h-16 sm:w-16"
+                onClick={() => {
+                  const heroTrack = buildPlayableTrack({
+                    title: 'Weekend Vibes',
+                    artist: '80 songs',
+                    tone: 'weekend-van',
+                  })
+                  void toggleTrack(heroTrack, featuredQueue)
+                }}
+                className="grid h-12 w-12 place-items-center rounded-full bg-white/92 text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition duration-300 hover:scale-[1.08] sm:h-16 sm:w-16"
               >
-                <PlayIcon size={20} />
+                {isCurrentTrack(buildPlayableTrack({
+                  title: 'Weekend Vibes',
+                  artist: '80 songs',
+                  tone: 'weekend-van',
+                })) && isPlaying ? <PauseIcon size={20} /> : <PlayIcon size={20} />}
               </button>
             </div>
           </div>
@@ -331,7 +401,7 @@ function PlaylistsPage() {
 
       <AnimatedSection
         delay={0.17}
-        className="relative grid items-center gap-4 overflow-hidden rounded-[24px] bg-linear-to-r from-[#ba90ff] via-[#a47bf3] to-[#956de9] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_18px_35px_rgba(157,115,239,0.24)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left"
+        className="relative grid items-center gap-4 overflow-hidden rounded-[24px] bg-linear-to-r from-[var(--route-accent)] via-[color-mix(in_srgb,var(--route-accent)_72%,var(--route-accent-strong))] to-[var(--route-accent-strong)] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),var(--route-chip-shadow)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_left_center,rgba(255,221,138,0.16),transparent_24%),radial-gradient(circle_at_80%_50%,rgba(255,255,255,0.18),transparent_26%)]" />
         <div className="relative h-[82px] w-[82px]" aria-hidden="true">
@@ -346,7 +416,15 @@ function PlaylistsPage() {
           <strong className="block text-[1.42rem] text-white sm:text-[1.56rem]">Organize. Discover. Enjoy.</strong>
           <p className="mt-1 text-white/84">Your perfect playlist is just a click away.</p>
         </div>
-        <MotionButton className="relative w-full rounded-full bg-white/18 px-6 py-3.5 font-extrabold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_16px_28px_rgba(102,69,182,0.2)] backdrop-blur-[10px] transition duration-300 hover:bg-white/24 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_18px_32px_rgba(102,69,182,0.28)] lg:w-auto">
+        <MotionButton
+          onClick={() => {
+            const firstTrack = featuredQueue[0]
+            if (firstTrack) {
+              void playTrack(firstTrack, featuredQueue)
+            }
+          }}
+          className="relative w-full rounded-full bg-white/18 px-6 py-3.5 font-extrabold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_16px_28px_rgba(102,69,182,0.2)] backdrop-blur-[10px] transition duration-300 hover:bg-white/24 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.38),0_18px_32px_rgba(102,69,182,0.28)] lg:w-auto"
+        >
           Create New Playlist
         </MotionButton>
       </AnimatedSection>

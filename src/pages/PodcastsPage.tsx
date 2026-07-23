@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { motion } from 'motion/react'
 import { getCoverArt } from '../assets/covers/coverArt'
 import heroPodcasts from '../assets/illustrations/hero-podcasts-v2.webp'
@@ -12,6 +13,7 @@ import {
   MediaThumb,
   MoreIcon,
   MotionButton,
+  PauseIcon,
   PageDataFallback,
   PageHero,
   PlayIcon,
@@ -21,7 +23,9 @@ import {
   SunIcon,
   TiltCard,
 } from '../components/ui'
+import { useAudioPlayer } from '../context/AudioPlayerContext'
 import { usePodcastsData } from '../hooks'
+import { buildPlayableQueue, buildPlayableTrack } from '../lib/audio/playableTrack'
 
 const categoryClasses: Record<string, string> = {
   education: 'from-[#d8c9ff] to-[#b498ff]',
@@ -33,10 +37,11 @@ const categoryClasses: Record<string, string> = {
 }
 
 const panelClass =
-  'rounded-[24px] border border-white/72 bg-linear-to-b from-[rgba(255,252,250,0.96)] to-[rgba(255,245,240,0.94)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:rounded-[28px] sm:p-[18px]'
+  'rounded-[24px] border border-white/72 bg-linear-to-b from-[var(--surface-card-start)] to-[var(--surface-card-end)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),var(--route-chip-shadow)] sm:rounded-[28px] sm:p-[18px]'
 
 function PodcastsPage() {
   const { data } = usePodcastsData()
+  const { isCurrentTrack, isPlaying, toggleTrack } = useAudioPlayer()
 
   if (!data) {
     return <PageDataFallback title="Loading podcasts" />
@@ -61,6 +66,39 @@ function PodcastsPage() {
     Business: 'mic-stage',
     Stories: 'dream-clouds',
   }
+
+  const trendingQueue = useMemo(
+    () => buildPlayableQueue(
+      trendingShows.map((show) => ({
+        title: show.title,
+        artist: show.category,
+        tone: show.tone,
+      })),
+    ),
+    [trendingShows],
+  )
+
+  const continueQueue = useMemo(
+    () => buildPlayableQueue(
+      podcastContinue.map((episode) => ({
+        title: episode.title,
+        artist: episode.show,
+        tone: episode.tone,
+      })),
+    ),
+    [podcastContinue],
+  )
+
+  const newEpisodeQueue = useMemo(
+    () => buildPlayableQueue(
+      newEpisodes.map((episode) => ({
+        title: episode.title,
+        artist: episode.show,
+        tone: episode.tone,
+      })),
+    ),
+    [newEpisodes],
+  )
 
   return (
     <>
@@ -99,9 +137,26 @@ function PodcastsPage() {
                 alt={show.title}
                 className="relative aspect-[0.88] overflow-hidden rounded-[18px] shadow-[inset_0_8px_14px_rgba(255,255,255,0.26)] sm:rounded-[24px]"
               >
-                <span className="absolute right-3 bottom-3 grid h-11 w-11 place-items-center rounded-full bg-white/90 text-[#8f6aea] shadow-[0_12px_22px_rgba(180,162,220,0.28)]">
-                  <PlayIcon size={16} />
-                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    void toggleTrack(
+                      buildPlayableTrack({
+                        title: show.title,
+                        artist: show.category,
+                        tone: show.tone,
+                      }),
+                      trendingQueue,
+                    )
+                  }}
+                  className="absolute right-3 bottom-3 grid h-11 w-11 place-items-center rounded-full bg-white/90 text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)]"
+                >
+                  {isCurrentTrack(buildPlayableTrack({
+                    title: show.title,
+                    artist: show.category,
+                    tone: show.tone,
+                  })) && isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
+                </button>
               </MediaThumb>
               <div className="px-0.5 pb-1">
                 <strong className="block text-[0.98rem] leading-tight text-[#30294f] sm:text-[1.1rem]">{show.title}</strong>
@@ -132,19 +187,36 @@ function PodcastsPage() {
                       <strong className="block truncate text-sm text-[#30294f] sm:text-base">{item.title}</strong>
                       <span className="mt-0.5 block truncate text-xs text-[#7d728e] sm:text-[0.96rem]">{item.show}</span>
                     </div>
-                    <span className="hidden rounded-full bg-[#f3ecff] px-2.5 py-1 text-[0.68rem] font-bold tracking-[0.16em] text-[#9277d9] uppercase sm:inline-flex">
+                    <span className="hidden rounded-full bg-[var(--route-chip-bg)] px-2.5 py-1 text-[0.68rem] font-bold tracking-[0.16em] text-[var(--route-accent-strong)] uppercase sm:inline-flex">
                       Resume
                     </span>
                   </div>
                   <div className="mt-2.5 flex items-center gap-2.5 sm:mt-3 sm:gap-3">
-                    <div className="h-2 flex-1 rounded-full bg-[#ece4f8]">
-                      <div className="h-2 rounded-full bg-linear-to-r from-[#b68eff] via-[#a276ef] to-[#8f6aea]" style={{ width: item.progress }} />
+                    <div className="h-2 flex-1 rounded-full bg-[color-mix(in_srgb,var(--route-accent-soft)_52%,white)]">
+                      <div className="h-2 rounded-full bg-linear-to-r from-[var(--route-accent)] via-[color-mix(in_srgb,var(--route-accent)_72%,var(--route-accent-strong))] to-[var(--route-accent-strong)]" style={{ width: item.progress }} />
                     </div>
                     <span className="shrink-0 text-xs font-medium text-[#7d728e] sm:text-sm">{item.remaining}</span>
                   </div>
                 </div>
-                <button type="button" className="grid h-[44px] w-[44px] place-items-center rounded-full bg-white text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)] transition hover:scale-[1.04]">
-                  <PlayIcon size={16} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    void toggleTrack(
+                      buildPlayableTrack({
+                        title: item.title,
+                        artist: item.show,
+                        tone: item.tone,
+                      }),
+                      continueQueue,
+                    )
+                  }}
+                  className="grid h-[44px] w-[44px] place-items-center rounded-full bg-white text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition hover:scale-[1.04]"
+                >
+                  {isCurrentTrack(buildPlayableTrack({
+                    title: item.title,
+                    artist: item.show,
+                    tone: item.tone,
+                  })) && isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
                 </button>
               </motion.div>
             ))}
@@ -208,7 +280,7 @@ function PodcastsPage() {
                   <strong className="block truncate text-sm text-[#30294f] sm:text-base">{show.title}</strong>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <span className="text-xs text-[#7d728e] sm:text-[0.95rem]">{show.episodes}</span>
-                    <span className="rounded-full bg-[#f4ecff] px-2.5 py-1 text-[0.68rem] font-bold tracking-[0.14em] text-[#8f6aea] uppercase">
+                    <span className="rounded-full bg-[var(--route-chip-bg)] px-2.5 py-1 text-[0.68rem] font-bold tracking-[0.14em] text-[var(--route-accent-strong)] uppercase">
                       Saved
                     </span>
                   </div>
@@ -250,8 +322,25 @@ function PodcastsPage() {
                     </span>
                   </div>
                 </div>
-                <button type="button" className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[#8f6aea] shadow-[0_10px_18px_rgba(223,208,235,0.26)] transition hover:scale-[1.04]">
-                  <PlayIcon size={16} />
+                <button
+                  type="button"
+                  onClick={() => {
+                    void toggleTrack(
+                      buildPlayableTrack({
+                        title: episode.title,
+                        artist: episode.show,
+                        tone: episode.tone,
+                      }),
+                      newEpisodeQueue,
+                    )
+                  }}
+                  className="grid h-[42px] w-[42px] place-items-center rounded-full bg-white text-[var(--route-accent-strong)] shadow-[var(--route-chip-shadow)] transition hover:scale-[1.04]"
+                >
+                  {isCurrentTrack(buildPlayableTrack({
+                    title: episode.title,
+                    artist: episode.show,
+                    tone: episode.tone,
+                  })) && isPlaying ? <PauseIcon size={16} /> : <PlayIcon size={16} />}
                 </button>
               </motion.div>
             ))}
@@ -261,7 +350,7 @@ function PodcastsPage() {
         <TiltCard as="article" className="relative overflow-hidden rounded-[24px] border border-white/72 bg-linear-to-br from-[#fff7fb] via-[#f8f0ff] to-[#efe6ff] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:rounded-[28px] sm:p-[18px]">
           <div className="mb-4 flex items-center justify-between gap-3">
             <h3 className="text-[1.2rem] font-extrabold text-[#30294f]">Featured Podcast</h3>
-            <span className="rounded-full bg-[#f3ecff] px-3 py-1 text-[0.72rem] font-extrabold tracking-[0.16em] text-[#8f6aea] uppercase">
+            <span className="rounded-full bg-[var(--route-chip-bg)] px-3 py-1 text-[0.72rem] font-extrabold tracking-[0.16em] text-[var(--route-accent-strong)] uppercase">
               Spotlight
             </span>
           </div>
@@ -286,15 +375,25 @@ function PodcastsPage() {
               </span>
               <span>Weekly</span>
             </div>
-            <span className="text-[#8f6aea]"><MoreIcon size={18} /></span>
+            <span className="text-[var(--route-accent-strong)]"><MoreIcon size={18} /></span>
           </div>
-          <MotionButton className="mt-5 w-full rounded-full bg-linear-to-r from-[#b98eff] to-[#9872ef] px-5 py-3.5 font-extrabold text-white shadow-[0_14px_24px_rgba(157,115,239,0.24)]">
+          <MotionButton
+            onClick={() => {
+              const featuredTrack = buildPlayableTrack({
+                title: 'Voices Unfiltered',
+                artist: 'Featured podcast',
+                tone: 'mic-stage',
+              })
+              void toggleTrack(featuredTrack, newEpisodeQueue)
+            }}
+            className="mt-5 w-full rounded-full bg-linear-to-r from-[var(--route-accent)] to-[var(--route-accent-strong)] px-5 py-3.5 font-extrabold text-white shadow-[var(--route-chip-shadow)]"
+          >
             Listen Now
           </MotionButton>
         </TiltCard>
       </AnimatedSection>
 
-      <AnimatedSection delay={0.17} className="grid items-center gap-4 rounded-[24px] bg-linear-to-r from-[#b98eff] to-[#9872ef] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),0_18px_35px_rgba(157,115,239,0.24)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left">
+      <AnimatedSection delay={0.17} className="grid items-center gap-4 rounded-[24px] bg-linear-to-r from-[var(--route-accent)] to-[var(--route-accent-strong)] px-4 py-4 text-center text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.35),var(--route-chip-shadow)] sm:rounded-[28px] sm:px-5 lg:grid-cols-[120px_1fr_auto] lg:text-left">
         <div className="relative h-[82px] w-[82px]" aria-hidden="true">
           <div className="h-full w-full rounded-[26px] bg-linear-to-b from-[#ffd76e] to-[#ffbf4b] shadow-[0_16px_30px_rgba(98,52,164,0.18)] [clip-path:polygon(50%_0%,63%_31%,98%_35%,72%_58%,79%_94%,50%_74%,21%_94%,28%_58%,2%_35%,37%_31%)]" />
         </div>

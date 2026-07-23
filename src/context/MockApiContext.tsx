@@ -12,7 +12,7 @@ import {
   type MockApiEndpoint,
   type MockApiResponseMap,
 } from '../data/mockApi'
-import { mockAppApi } from '../services'
+import { appApi } from '../services'
 
 type EndpointStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -63,7 +63,7 @@ export function MockApiProvider({ children }: PropsWithChildren) {
       return next
     })
 
-    const request = mockAppApi.get(endpoint)
+    const request = appApi.get(endpoint)
       .then((response) => {
         setCache((current) => ({ ...current, [endpoint]: response }))
         setStatuses((current) => ({ ...current, [endpoint]: 'success' }))
@@ -111,9 +111,22 @@ export function useMockApiContext() {
 
 export function useMockEndpoint<K extends MockApiEndpoint>(endpoint: K) {
   const { cache, statuses, errors, loadEndpoint } = useMockApiContext()
+  const lastAutoRefreshAt = useRef(0)
 
   const loadCurrentEndpoint = useEffectEvent(() => {
     void loadEndpoint(endpoint)
+  })
+
+  const refreshCurrentEndpoint = useEffectEvent(() => {
+    const now = Date.now()
+
+    // Avoid double refetch when both visibilitychange and focus fire together.
+    if (now - lastAutoRefreshAt.current < 1200) {
+      return
+    }
+
+    lastAutoRefreshAt.current = now
+    void loadEndpoint(endpoint, true)
   })
 
   const data = cache[endpoint] as MockApiResponseMap[K] | undefined
@@ -121,6 +134,26 @@ export function useMockEndpoint<K extends MockApiEndpoint>(endpoint: K) {
   useEffect(() => {
     loadCurrentEndpoint()
   }, [loadCurrentEndpoint])
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        refreshCurrentEndpoint()
+      }
+    }
+
+    const handleWindowFocus = () => {
+      refreshCurrentEndpoint()
+    }
+
+    window.addEventListener('focus', handleWindowFocus)
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('focus', handleWindowFocus)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
+  }, [refreshCurrentEndpoint])
 
   return {
     data,

@@ -30,7 +30,7 @@ type PageHeroProps = {
 }
 
 export const panelClass =
-  'rounded-[24px] border border-white/72 bg-linear-to-b from-[rgba(255,252,250,0.96)] to-[rgba(255,245,240,0.94)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:rounded-[28px] sm:p-[18px]'
+  'rounded-[24px] border border-white/72 bg-linear-to-b from-[var(--surface-card-start)] to-[var(--surface-card-end)] p-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_var(--route-chip-shadow)] sm:rounded-[28px] sm:p-[18px]'
 
 const heroClass =
   'grid items-center gap-4 rounded-[24px] border border-white/70 bg-linear-to-br from-[color-mix(in_srgb,var(--route-accent-soft)_72%,white)] via-[color-mix(in_srgb,var(--route-accent-soft)_88%,white)] to-[color-mix(in_srgb,var(--route-accent-soft)_76%,#f7efff)] px-4 py-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.95),0_18px_35px_rgba(195,180,216,0.18)] sm:gap-6 sm:rounded-[28px] sm:px-6 sm:py-5'

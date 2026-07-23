@@ -123,5 +123,9 @@ export const coverArtByTone: Record<string, string> = {
 }
 
 export function getCoverArt(tone: string) {
+  if (/^(https?:\/\/|data:|blob:)/i.test(tone)) {
+    return tone
+  }
+
   return coverArtByTone[tone] ?? sunset
 }

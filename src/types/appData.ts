@@ -12,9 +12,11 @@ export type StatItem = {
 }
 
 export type TrackListItem = {
+  trackId?: string
   title: string
   artist: string
   tone: ToneKey
+  audioUrl?: string
 }
 
 export type GenreItem = {
@@ -24,12 +26,14 @@ export type GenreItem = {
 }
 
 export type MusicCardItem = {
+  trackId?: string
   title: string
   artist: string
   duration?: string
   tone: ToneKey
   liked?: boolean
   rank?: number
+  audioUrl?: string
 }
 
 export type AlbumCardItem = {
@@ -45,11 +49,13 @@ export type ArtistCardItem = {
 }
 
 export type ContinueListeningItem = {
+  trackId?: string
   title: string
   artist: string
   remaining: string
   progress: string
   tone: ToneKey
+  audioUrl?: string
 }
 
 export type MoodItem = {

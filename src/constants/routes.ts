@@ -6,6 +6,7 @@ export const appRoutes = {
   podcasts: '/podcasts',
   activity: '/activity',
   settings: '/settings',
+  libraryAdmin: '/library-admin',
 } as const
 
 export const sidebarRouteMap = {
@@ -16,6 +17,7 @@ export const sidebarRouteMap = {
   Podcasts: appRoutes.podcasts,
   Activity: appRoutes.activity,
   Settings: appRoutes.settings,
+  'Library Admin': appRoutes.libraryAdmin,
 } as const
 
 export const routeOrder = [
@@ -26,5 +28,5 @@ export const routeOrder = [
   appRoutes.podcasts,
   appRoutes.activity,
   appRoutes.settings,
+  appRoutes.libraryAdmin,
 ] as const
-
